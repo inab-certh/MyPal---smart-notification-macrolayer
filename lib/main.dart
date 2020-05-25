@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'splashNavigation.dart';
+import 'package:macronotificationsmypal/macroProcesses.dart';
+import 'package:macronotificationsmypal/macroScheduleHandler.dart';
+//import 'splashNavigation.dart';
 
 void main() => runApp(MyApp());
 
@@ -50,10 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isChecked2 = false;
   //DateTime date3;
   //bool isChecked3 = false;
-  DateTime date4;
+  DateTime prefered;
   DateTime current = new DateTime.now();
   int curhour = DateTime.now().hour;
   int curminute = DateTime.now().minute;
+  var argpos = new List(2);
 
 
   @override
@@ -215,10 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         labelText: 'Patients preffered time',
                         hasFloatingPlaceholder: true),
                     onChanged: (dt) {
-                      setState(() => date4 = dt);
-                      print('Selected date: $date4');
-                      print('Hour: $date4.hour');
-                      print('Minute: $date4.minute');
+                      setState(() => prefered = dt);
+                      print('Selected date: $prefered');
+                      print('Hour: $prefered.hour');
+                      print('Minute: $prefered.minute');
                     },
                   ),
                   new DateTimePickerFormField(
@@ -241,15 +244,30 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: new RaisedButton(
                         child:
                             const Text('Schedule Macro (Activation of ePRO)'),
-                        onPressed: () {
+                        onPressed:
+                            () async {
+                          argpos = getPrioritiesForNotificationSchedule(date1, isChecked1, _disease, _clinic, prefered);
+                          print(argpos);
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Center(child: CircularProgressIndicator(),);
+                              });
+                          await loginAction();
+
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => MySplashCit()));
+                                  builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));
                         },
                       )),
                 ],
               ))),
     );
+  }
+  Future<bool> loginAction() async {
+    //replace the below line of code with your login request
+    await new Future.delayed(const Duration(seconds: 2));
+    return true;
   }
 }

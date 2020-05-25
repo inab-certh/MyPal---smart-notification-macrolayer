@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'package:splashscreen/splashscreen.dart';
-import 'splashNavigation.dart';
+//import 'package:splashscreen/splashscreen.dart';
+//import 'splashNavigation.dart';
 
-class MacroResults extends StatefulWidget {
-  // MyHomePage({Key key, this.title}) : super(key: key);
-  //final String title;
-  @override
-  _MacroResults createState() => new _MacroResults();
-}
 
-class _MacroResults extends State<MacroResults> {
+
+class MacroResults extends StatelessWidget {
+  MacroResults({Key key, this.op1, this.op2}) : super(key: key);
+  final int op1;
+  final int op2;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +21,7 @@ class _MacroResults extends State<MacroResults> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Text(
-              'Here will be displayed the info',
+              'opportune time detected at $op1:00 and with priority $op2',
             ),
             /*new Text(
               '$_counter',

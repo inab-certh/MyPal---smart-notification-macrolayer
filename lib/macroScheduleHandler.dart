@@ -1,21 +1,17 @@
-void main(){
-  getPrioritiesForNotificationSchedule();
-}
 
-
-void getPrioritiesForNotificationSchedule() {
+List getPrioritiesForNotificationSchedule(DateTime date1, bool isChecked1, String clinic, String disease, DateTime prefered) {
   bool isThereAp1 = true;
-  DateTime date1 = DateTime.parse("2020-05-15 12:00:00");
-  bool isChecked1 = false;
+  //DateTime date1 = DateTime.parse("2020-05-15 12:00:00");
+  //bool isChecked1 = false;
 
   bool isThereAp2 = false;
   DateTime date2 = DateTime.parse("2020-05-15 16:00:00");
   bool isChecked2 = false;
 
-  String disease = "CLL";
-  String clinic = "KI";
+ // String disease = "CLL";
+  //String clinic = "KI";
 
-  DateTime prefered = DateTime.parse("2020-05-15 19:00:00");
+  //DateTime prefered = DateTime.parse("2020-05-15 19:00:00");
 
   DateTime current = new DateTime.now();
 
@@ -273,6 +269,7 @@ void getPrioritiesForNotificationSchedule() {
   print("");
   int position =0;
   int opp = 0;
+  var argpos = new List(2);
   var position3 = new List(10);
   //var opp3 = new List(10);
   int opp3count=0;
@@ -302,6 +299,9 @@ void getPrioritiesForNotificationSchedule() {
         print("opportune time detected at $position:00 and with priority $opp");
         count[prior]++;
         done=true;
+        argpos[0] = position;
+        argpos[1] = opp;
+        return argpos;
       }
       if (priorityTable[f] == prior && prior == 3 && done == false){
         //print(priorityTable[f]);
@@ -312,6 +312,9 @@ void getPrioritiesForNotificationSchedule() {
         opp3count++;
         //opp3.add(opp3count);
         done=true;
+        argpos[0] = position3;
+        argpos[1] = prior;
+        return argpos;
       }
       if (priorityTable[f] == prior && prior == 2 && done == false){
         //print(priorityTable[f]);
@@ -322,6 +325,9 @@ void getPrioritiesForNotificationSchedule() {
         opp2count++;
         //opp2.add(opp2count);
         done=true;
+        argpos[0] = position2;
+        argpos[1] = prior;
+        return argpos;
       }
       if (priorityTable[f] == prior && prior == 1 && done == false){
         //print(priorityTable[f]);
@@ -332,6 +338,9 @@ void getPrioritiesForNotificationSchedule() {
         opp1count++;
         //opp1.add(opp1count);
         done=true;
+        argpos[0] = position1;
+        argpos[1] = prior;
+        return argpos;
       }
       if (priorityTable[f] == prior && prior == 0 && done == false){
         //print(priorityTable[f]);
@@ -342,6 +351,9 @@ void getPrioritiesForNotificationSchedule() {
         opp0count++;
         //opp0.add(opp0count);
         done=true;
+        argpos[0] = position0;
+        argpos[1] = prior;
+        return argpos;
       }
     }
   }
@@ -359,4 +371,5 @@ void getPrioritiesForNotificationSchedule() {
   //print("opportune time detected at $position:00 and with priority $opp");
   print("");
   print("0: Dont even bother, 1: Better not Bother, 2: Maybe you could, 3: Opportune momment, 4: Prefered momment, 5: Treat as 3 for testing reasons ");
+return argpos;
 }
