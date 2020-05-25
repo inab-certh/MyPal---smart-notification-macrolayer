@@ -29,7 +29,7 @@ class _MySplashCitState extends State<MySplashCit> {
       //photoSize: 70.0,
       loaderColor: Colors.blue,
       loadingText: Text('Loading'),
-      navigateAfterSeconds: MacroResults(op1: _position, op2: _opp),
+      navigateAfterSeconds: MacroResults(op1:_opp, op2:_position),
     );
   }
 }

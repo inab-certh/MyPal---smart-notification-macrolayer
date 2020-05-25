@@ -245,29 +245,28 @@ class _MyHomePageState extends State<MyHomePage> {
                         child:
                             const Text('Schedule Macro (Activation of ePRO)'),
                         onPressed:
-                            () async {
+                            () {
                           argpos = getPrioritiesForNotificationSchedule(date1, isChecked1, _disease, _clinic, prefered);
                           print(argpos);
+
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {
+                                Future.delayed(const Duration(seconds: 2));
                                 return Center(child: CircularProgressIndicator(),);
                               });
-                          await loginAction();
 
-                          Navigator.push(
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));
+
+                          /*Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));
+                                  builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));*/
                         },
                       )),
                 ],
               ))),
     );
   }
-  Future<bool> loginAction() async {
-    //replace the below line of code with your login request
-    await new Future.delayed(const Duration(seconds: 2));
-    return true;
-  }
+
 }

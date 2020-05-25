@@ -33,7 +33,7 @@ class MacroResults extends StatelessWidget {
       floatingActionButton: new FloatingActionButton.extended(
         tooltip: 'Schedule again',
         foregroundColor: Colors.white,
-        icon: Icon(Icons.arrow_back),
+        //icon: Icon(Icons.arrow_back),
         label: Text('Schedule new'),
         onPressed: () {
           Navigator.push(context,
