@@ -25,11 +25,11 @@ List getPrioritiesForNotificationSchedule(DateTime date1, bool isChecked1, Strin
 
   int start1 = hour1;
   int endAp1=0;
-  int pAp1=5;
-  int pTr1=5;
+  int pAp1=3;
+  int pTr1=3;
   int endTr1=0;
-  int pAp2=5;
-  int pTr2=5;
+  int pAp2=3;
+  int pTr2=3;
   int durationAp1=0;
   int durationTr1=0;
 
