@@ -1,5 +1,26 @@
-//import 'package:flutter/material.dart';
 import 'dart:math';
+
+void main() {
+
+  DateTime date1 = DateTime.parse("2020-07-07 11:00:00");
+
+  DateTime date2 = DateTime.parse("2020-07-07 19:00:00");
+  var macroInstanse = new MacroScheduleHandler(
+      disease: 'CLL',
+      clinic: 'FN BRNO',
+      preferredTime: date2,
+      appointmentStartingTime: date1,
+      isAppointmentForTreatment: true);
+
+
+
+
+  print(macroInstanse.populatePriorityTable());
+  print(macroInstanse.canIIssueANotificationNow());
+  print(macroInstanse.whenCanIIssueANotification());
+
+}
+
 class MacroScheduleHandler {
   String disease;
   String clinic;
@@ -9,10 +30,12 @@ class MacroScheduleHandler {
 
   MacroScheduleHandler(
       {this.disease,
-      this.clinic,
-      this.preferredTime,
-      this.appointmentStartingTime,
-      this.isAppointmentForTreatment});
+        this.clinic,
+        this.preferredTime,
+        this.appointmentStartingTime,
+        this.isAppointmentForTreatment});
+
+  // int appointmentStartingHour = appointmentStartingTime.hour;
 
   DateTime currentTime = new DateTime.now();
 
@@ -36,8 +59,7 @@ class MacroScheduleHandler {
     } else if (disease == 'MDS' && isAppointmentForTreatment == false) {
       priorityOfAppointment.add(1);
       priorityOfAppointment.add(0);
-
-    } else if(disease == 'CLL' && isAppointmentForTreatment == true) {
+    } else if (disease == 'CLL' && isAppointmentForTreatment == true) {
       switch (clinic) {
         case 'KI':
           priorityOfAppointment.add(1);
@@ -53,12 +75,9 @@ class MacroScheduleHandler {
           priorityOfAppointment.add(0);
           break;
       }
-    }else if (disease == 'MDS' && isAppointmentForTreatment == true){
-//TODO: check print
-      print(
-          'MDS Treatment has no ill-timed moments');
+    } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
+      print('MDS Treatment has no ill-timed moments');
     } else {
-      //TODO: check print
       print(
           'error in getPriority method of MacroScheduleHandler class at the disease if statement');
     }
@@ -84,7 +103,6 @@ class MacroScheduleHandler {
     } else if (disease == 'MDS') {
       startingHour = appointmentStartingTime.hour;
     } else {
-      //TODO: check print
       print(
           'error in calculate starting time method of MacroScheduleHandler class at the disease if statement');
     }
@@ -111,8 +129,7 @@ class MacroScheduleHandler {
     } else if (disease == 'MDS' && isAppointmentForTreatment == false) {
       durationOfAppointment.add(3);
       durationOfAppointment.add(5);
-
-    } else if(disease == 'CLL' && isAppointmentForTreatment == true) {
+    } else if (disease == 'CLL' && isAppointmentForTreatment == true) {
       switch (clinic) {
         case 'KI':
           durationOfAppointment.add(1);
@@ -128,32 +145,31 @@ class MacroScheduleHandler {
           durationOfAppointment.add(2);
           break;
       }
-    }else if (disease == 'MDS' && isAppointmentForTreatment == true){
+    } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
       durationOfAppointment.add(0);
-//TODO: check print
-      print(
-          'MDS Treatment has no ill-timed moments');
+
+      print('MDS Treatment has no ill-timed moments');
     } else {
-      //TODO: check print
       print(
           'error in calculate duration method of MacroScheduleHandler class at the disease if statement');
     }
     return durationOfAppointment;
   }
 
-  bool canIIssueANotificationNow () {
+  bool canIIssueANotificationNow() {
     bool canYou;
     int endingHour;
+
     int currentHour = currentTime.hour;
     var durationOfAppointment = getDurationOfAppointment();
     int startingHour = getStartingHourOfAppointment();
     if (durationOfAppointment.length == 2) {
-      endingHour = startingHour + durationOfAppointment[0] + durationOfAppointment[1];
+      endingHour =
+          startingHour + durationOfAppointment[0] + durationOfAppointment[1];
     } else {
       endingHour = startingHour + durationOfAppointment[0];
     }
-    //bool canYou = (currentHour >= startingHour && currentHour <= endingHour) ? true : false;
-    if (currentHour >= startingHour && currentHour <= endingHour){
+    if (currentHour >= startingHour && currentHour <= endingHour) {
       canYou = true;
     } else {
       canYou = false;
@@ -161,19 +177,19 @@ class MacroScheduleHandler {
     return canYou;
   }
 
-  Map initializeHourTable () {
+  Map initializeHourTable() {
     var i;
     Map<int, int> priorities = Map();
-    for (i=0; i<24; i++){
+    for (i = 0; i < 24; i++) {
       priorities[i] = 3;
     }
-    for (i=0; i<9; i++){
+    for (i = 0; i < 9; i++) {
       priorities[i] = 1;
     }
     priorities[23] = 1;
     priorities[9] = 2;
     priorities[22] = 2;
-    priorities[24] = currentTime.hour;
+    //priorities[24] = currentTime.hour;
 
     return priorities;
   }
@@ -197,6 +213,7 @@ class MacroScheduleHandler {
         priorities[i] = priorityOfAppointment[0];
       }
     }
+
     return priorities;
   }
 
@@ -217,6 +234,7 @@ class MacroScheduleHandler {
       switch (readyPriorityTable[i]) {
         case 4:
           priority4Count.add(i);
+          //print(priority4Count);
           break;
 
         case 3:
@@ -240,15 +258,17 @@ class MacroScheduleHandler {
     if (priority4Count.isNotEmpty) {
 
       newScheduledHour = priority4Count[0];
-     // print(priority4Count);
+
     } else if (priority3Count.isNotEmpty) {
       if (priority3Count.length > 1) {
+
         newScheduledHour = randomFunction(priority3Count);
       } else {
         newScheduledHour = priority3Count[0];
       }
     } else if (priority2Count.isNotEmpty) {
       if (priority2Count.length > 1) {
+        print(priority2Count);
         newScheduledHour = randomFunction(priority2Count);
       } else {
         newScheduledHour = priority2Count[0];
@@ -268,7 +288,11 @@ class MacroScheduleHandler {
     } else {
       print('error');
     }
-
+    print(priority4Count);
+    print(priority3Count);
+    print(priority2Count);
+    print(priority1Count);
+    print(priority0Count);
     return newScheduledHour;
   }
 
@@ -281,5 +305,4 @@ class MacroScheduleHandler {
     return element;
     // print("$r is in the range of $min and $max");
   }
-
 }
