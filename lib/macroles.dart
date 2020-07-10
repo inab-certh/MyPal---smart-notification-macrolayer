@@ -2,22 +2,33 @@ import 'dart:math';
 
 void main() {
 
-  DateTime date1 = DateTime.parse("2020-07-07 11:00:00");
+  DateTime appointmentDateTime = DateTime.parse("2020-07-07 11:00:00");
+  DateTime preferredDateTime = DateTime.parse("2020-07-07 19:00:00");
+  var activationDuration = 2;
 
-  DateTime date2 = DateTime.parse("2020-07-07 19:00:00");
-  var macroInstanse = new MacroScheduleHandler(
+  var macroInstance = new MacroScheduleHandler(
       disease: 'CLL',
       clinic: 'FN BRNO',
-      preferredTime: date2,
-      appointmentStartingTime: date1,
+      preferredTime: preferredDateTime,
+      appointmentStartingTime: appointmentDateTime,
       isAppointmentForTreatment: true);
 
+  print(macroInstance.populatePriorityTable());
+  var canYou = macroInstance.canIIssueANotificationNow();
+  print(canYou);
+  var scheduledHour = macroInstance.whenCanIIssueANotification();
+  print(scheduledHour);
+  if (scheduledHour == 24){
+    switch(activationDuration){
+      case 2:
+        canYou = false; //Gia na ginei to notification opwsdhpote
+        break;
+      case 7:
 
+        break;
+    }
 
-
-  print(macroInstanse.populatePriorityTable());
-  print(macroInstanse.canIIssueANotificationNow());
-  print(macroInstanse.whenCanIIssueANotification());
+  }
 
 }
 
@@ -37,7 +48,7 @@ class MacroScheduleHandler {
 
   // int appointmentStartingHour = appointmentStartingTime.hour;
 
-  DateTime currentTime = new DateTime.now();
+  DateTime currentTime =/* DateTime.parse("2020-07-07 23:00:00");*/new DateTime.now();
 
   List<int> getPriorityForAppointment() {
     List<int> priorityOfAppointment = new List();
@@ -158,9 +169,9 @@ class MacroScheduleHandler {
 
   bool canIIssueANotificationNow() {
     bool canYou;
-    int endingHour;
-
+    var issueNotification = populatePriorityTable();
     int currentHour = currentTime.hour;
+    /*int endingHour;
     var durationOfAppointment = getDurationOfAppointment();
     int startingHour = getStartingHourOfAppointment();
     if (durationOfAppointment.length == 2) {
@@ -169,10 +180,12 @@ class MacroScheduleHandler {
     } else {
       endingHour = startingHour + durationOfAppointment[0];
     }
-    if (currentHour >= startingHour && currentHour <= endingHour) {
+    if (currentHour >= startingHour && currentHour < endingHour && issueNotification[currentHour] < 3) {
       canYou = true;
-    } else {
+    } else*/ if (issueNotification[currentHour] > 2) {
       canYou = false;
+    } else {
+      canYou = true;
     }
     return canYou;
   }
@@ -254,45 +267,62 @@ class MacroScheduleHandler {
           break;
       }
     }
+    var priority42Count = checkScheduledTimeWithCurrentHour(priority4Count);
+    var priority32Count = checkScheduledTimeWithCurrentHour(priority3Count);
+    var priority22Count = checkScheduledTimeWithCurrentHour(priority2Count);
+    var priority12Count = checkScheduledTimeWithCurrentHour(priority1Count);
+    var priority02Count = checkScheduledTimeWithCurrentHour(priority0Count);
 
-    if (priority4Count.isNotEmpty) {
+    if (priority42Count.isNotEmpty) {
+      print(priority42Count);
 
-      newScheduledHour = priority4Count[0];
+      newScheduledHour = priority42Count[0];
 
-    } else if (priority3Count.isNotEmpty) {
-      if (priority3Count.length > 1) {
+    } else if (priority32Count.isNotEmpty) {
 
-        newScheduledHour = randomFunction(priority3Count);
+      if (priority32Count.length > 1) {
+
+        newScheduledHour = randomFunction(priority32Count);
       } else {
-        newScheduledHour = priority3Count[0];
+        newScheduledHour = priority32Count[0];
       }
-    } else if (priority2Count.isNotEmpty) {
-      if (priority2Count.length > 1) {
-        print(priority2Count);
-        newScheduledHour = randomFunction(priority2Count);
+    } else if (priority22Count.isNotEmpty) {
+      if (priority22Count.length > 1) {
+        print(priority22Count);
+        newScheduledHour = randomFunction(priority22Count);
       } else {
-        newScheduledHour = priority2Count[0];
+        newScheduledHour = priority22Count[0];
       }
-    } else if (priority1Count.isNotEmpty) {
-      if (priority1Count.length > 1) {
-        newScheduledHour = randomFunction(priority1Count);
+    } else if (priority12Count.isNotEmpty) {
+      if (priority12Count.length > 1) {
+        newScheduledHour = randomFunction(priority12Count);
       } else {
-        newScheduledHour = priority1Count[0];
+        newScheduledHour = priority12Count[0];
       }
-    } else if (priority0Count.isNotEmpty) {
-      if (priority0Count.length > 1) {
-        newScheduledHour = randomFunction(priority0Count);
+    } else if (priority02Count.isNotEmpty) {
+      if (priority02Count.length > 1) {
+        newScheduledHour = randomFunction(priority02Count);
       } else {
-        newScheduledHour = priority0Count[0];
+        newScheduledHour = priority02Count[0];
       }
     } else {
-      print('error');
+      if (newScheduledHour == null) {
+        newScheduledHour = 24;
+        print('no optimum time detected for today');
+      } else {print('error in choosing the best time method <whenCanIIssueANotification>');}
     }
-    print(priority4Count);
-    print(priority3Count);
-    print(priority2Count);
-    print(priority1Count);
-    print(priority0Count);
+    print('The different times with priorities 4 are: $priority4Count');
+    print('The different times with priorities 4 when compering with current timestamp are: $priority42Count');
+    print('The different times with priorities 3 are: $priority3Count');
+    print('The different times with priorities 3 when compering with current timestamp are: $priority32Count');
+    print('The different times with priorities 2 are: $priority2Count');
+    print('The different times with priorities 2 when compering with current timestamp are: $priority22Count');
+    print('The different times with priorities 1 are: $priority1Count');
+    print('The different times with priorities 1 when compering with current timestamp are: $priority12Count');
+    print('The different times with priorities 0 are: $priority0Count');
+    print('The different times with priorities 0 when compering with current timestamp are: $priority02Count');
+
+
     return newScheduledHour;
   }
 
@@ -304,5 +334,17 @@ class MacroScheduleHandler {
     var element = list[_random.nextInt(list.length)];
     return element;
     // print("$r is in the range of $min and $max");
+  }
+
+  List<int> checkScheduledTimeWithCurrentHour (List list) {
+    var currentHour = currentTime.hour;
+    List<int> newList =new List();
+    var i;
+      for (i = 0; i < list.length; i++) {
+        if (list[i] > currentHour) {
+          newList.add(list[i]);
+        }
+      }
+    return newList;
   }
 }
