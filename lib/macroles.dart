@@ -1,8 +1,22 @@
 import 'dart:math';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:core';
+//import 'dart:io';
 
-void main() {
+void main() async{
 
-  DateTime appointmentDateTime = DateTime.parse("2020-07-07 11:00:00");
+  final Future<List<dynamic>> futureList = getData();
+  final list = await futureList;
+var boolValue;
+  if (list[1] == 'false'){
+    boolValue = false;
+  } else {
+    boolValue = true;
+  }
+  //DateTime appointmentDateTime = DateTime.parse("2020-07-07 11:00:00");
+  //print(appointmentDateTime.hour);
   DateTime preferredDateTime = DateTime.parse("2020-07-07 19:00:00");
   var activationDuration = 2;
 
@@ -10,9 +24,10 @@ void main() {
       disease: 'CLL',
       clinic: 'FN BRNO',
       preferredTime: preferredDateTime,
-      appointmentStartingTime: appointmentDateTime,
-      isAppointmentForTreatment: true);
+      appointmentStartingTime: DateTime.parse(list[0]),
+      isAppointmentForTreatment: boolValue);
 
+  //print(data);
   print(macroInstance.populatePriorityTable());
   var canYou = macroInstance.canIIssueANotificationNow();
   print(canYou);
@@ -25,11 +40,36 @@ void main() {
         break;
       case 7:
 
+
         break;
     }
 
   }
 
+}
+
+Future<List<String>> getData() async {
+  http.Response response = await http.get(Uri.encodeFull('https://mypal1.inab.certh.gr/mypal/data-api/adult_appointments/?patient_id=124&appointment_date=2020-06-30'),
+      headers: {
+        "Authorization": "bearer 8XulvucSmkjAUOkeeXoma0tTfzJu9h",
+        "Content-Type": "application/json"
+      });
+  List<dynamic> resBody = jsonDecode(response.body);
+  print(resBody);
+  String appointmentDate = resBody[0]["appointment_date"];
+  bool appTreat = resBody[0]["is_this_a_treatment_appointment"];
+  print('datetime is ' + appointmentDate);
+  print('treatment status is ' + appTreat.toString());
+  //print(data.length);
+  // print(data[0]["patient"]);
+
+  //returnedData.add(data[0]["appointment_date"]);
+
+  //print(returnedData[0]);
+  //print(returnedData[1]);
+  //print(returnedData.length);
+  //print(data[5]["treatment_plan"]);
+  return [appointmentDate, appTreat.toString()];
 }
 
 class MacroScheduleHandler {
