@@ -3,26 +3,39 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:core';
-//import 'dart:io';
 
-void main() async{
+void main() async {
+  String patientId = '124';
+  DateTime preferredDateTime = DateTime.parse("2020-07-07T16:00:00Z");
+  var activationDuration = 7;
+  var token = 'tV41zJdhZIOsnwaiLfjqrDLWDTp1j6';
+  var currentDate = getCurrentDate(false);
+  var nextToCurrentDate = getCurrentDate(true);
+  var disease = 'MDS';
+  var clinic = 'PAGNI';
 
-  final Future<List<dynamic>> futureList = getData();
+  final Future<List<dynamic>> futureList =
+      getData(token, patientId, currentDate);
   final list = await futureList;
-var boolValue;
-  if (list[1] == 'false'){
+  final Future<List<dynamic>> future2List =
+      getData(token, patientId, nextToCurrentDate);
+  final list2 = await future2List;
+  var boolValue;
+  var bool2Value;
+  if (list[1] == 'false') {
     boolValue = false;
   } else {
     boolValue = true;
   }
-  //DateTime appointmentDateTime = DateTime.parse("2020-07-07 11:00:00");
-  //print(appointmentDateTime.hour);
-  DateTime preferredDateTime = DateTime.parse("2020-07-07 19:00:00");
-  var activationDuration = 2;
+  if (list2[1] == 'false') {
+    bool2Value = false;
+  } else {
+    bool2Value = true;
+  }
 
   var macroInstance = new MacroScheduleHandler(
-      disease: 'CLL',
-      clinic: 'FN BRNO',
+      disease: disease,
+      clinic: clinic,
       preferredTime: preferredDateTime,
       appointmentStartingTime: DateTime.parse(list[0]),
       isAppointmentForTreatment: boolValue);
@@ -31,27 +44,65 @@ var boolValue;
   print(macroInstance.populatePriorityTable());
   var canYou = macroInstance.canIIssueANotificationNow();
   print(canYou);
-  var scheduledHour = macroInstance.whenCanIIssueANotification();
-  print(scheduledHour);
-  if (scheduledHour == 24){
-    switch(activationDuration){
+
+  var scheduledHour = macroInstance.whenCanIIssueANotification(false);
+  print('Time to issue is: ' + scheduledHour.toString());
+  if (scheduledHour == 24) {
+    switch (activationDuration) {
       case 2:
-        canYou = false; //Gia na ginei to notification opwsdhpote
+        canYou = false;
+        print('The notification will be issued immediatly');
         break;
       case 7:
-
-
+        var macro2Instance = new MacroScheduleHandler(
+            disease: disease,
+            clinic: clinic,
+            preferredTime: preferredDateTime,
+            appointmentStartingTime: DateTime.parse(list2[0]),
+            isAppointmentForTreatment: bool2Value);
+        print(macro2Instance.populatePriorityTable());
+        var scheduled2Hour = macro2Instance.whenCanIIssueANotification(true);
+        print('Time to issue the next day is: ' + scheduled2Hour.toString());
         break;
     }
-
   }
-
 }
 
-Future<List<String>> getData() async {
-  http.Response response = await http.get(Uri.encodeFull('https://mypal1.inab.certh.gr/mypal/data-api/adult_appointments/?patient_id=124&appointment_date=2020-06-30'),
+String getCurrentDate(bool date) {
+  DateTime currentDate =
+      DateTime.parse('2020-07-16T16:00:00Z'); //DateTime.now();
+  if (date == false) {
+    String searchDate = currentDate.year.toString() +
+        '-' +
+        currentDate.month.toString() +
+        '-' +
+        currentDate.day.toString();
+    print(searchDate);
+    return searchDate;
+  } else if (date == true) {
+    int nextDay = currentDate.day + 1;
+    String searchNextDate = currentDate.year.toString() +
+        '-' +
+        currentDate.month.toString() +
+        '-' +
+        nextDay.toString();
+    print(searchNextDate);
+    return searchNextDate;
+  } else {
+    return null;
+  }
+}
+
+Future<List<String>> getData(
+    String token, String patientId, String appointmentDate1) async {
+  http.Response response = await http.get(
+      Uri.encodeFull(
+          'https://mypal1.inab.certh.gr/mypal/data-api/adult_appointments/?patient_id=' +
+              patientId +
+              '&appointment_date=' +
+              appointmentDate1),
       headers: {
-        "Authorization": "bearer 8XulvucSmkjAUOkeeXoma0tTfzJu9h",
+        "Authorization": "bearer " + token,
         "Content-Type": "application/json"
       });
   List<dynamic> resBody = jsonDecode(response.body);
@@ -60,15 +111,7 @@ Future<List<String>> getData() async {
   bool appTreat = resBody[0]["is_this_a_treatment_appointment"];
   print('datetime is ' + appointmentDate);
   print('treatment status is ' + appTreat.toString());
-  //print(data.length);
-  // print(data[0]["patient"]);
 
-  //returnedData.add(data[0]["appointment_date"]);
-
-  //print(returnedData[0]);
-  //print(returnedData[1]);
-  //print(returnedData.length);
-  //print(data[5]["treatment_plan"]);
   return [appointmentDate, appTreat.toString()];
 }
 
@@ -81,14 +124,15 @@ class MacroScheduleHandler {
 
   MacroScheduleHandler(
       {this.disease,
-        this.clinic,
-        this.preferredTime,
-        this.appointmentStartingTime,
-        this.isAppointmentForTreatment});
+      this.clinic,
+      this.preferredTime,
+      this.appointmentStartingTime,
+      this.isAppointmentForTreatment});
 
   // int appointmentStartingHour = appointmentStartingTime.hour;
 
-  DateTime currentTime =/* DateTime.parse("2020-07-07 23:00:00");*/new DateTime.now();
+  DateTime currentTime =
+      DateTime.parse("2020-07-14 13:00:00"); // new DateTime.now();
 
   List<int> getPriorityForAppointment() {
     List<int> priorityOfAppointment = new List();
@@ -222,7 +266,8 @@ class MacroScheduleHandler {
     }
     if (currentHour >= startingHour && currentHour < endingHour && issueNotification[currentHour] < 3) {
       canYou = true;
-    } else*/ if (issueNotification[currentHour] > 2) {
+    } else*/
+    if (issueNotification[currentHour] > 2) {
       canYou = false;
     } else {
       canYou = true;
@@ -258,7 +303,12 @@ class MacroScheduleHandler {
       for (i = startingHour; i < startingHour + durationOfAppointment[0]; i++) {
         priorities[i] = priorityOfAppointment[0];
       }
-      for (i = startingHour + durationOfAppointment[0]; i < startingHour + durationOfAppointment[0] + durationOfAppointment[1]; i++) {
+      for (i = startingHour + durationOfAppointment[0];
+          i <
+              startingHour +
+                  durationOfAppointment[0] +
+                  durationOfAppointment[1];
+          i++) {
         priorities[i] = priorityOfAppointment[1];
       }
     } else {
@@ -270,15 +320,15 @@ class MacroScheduleHandler {
     return priorities;
   }
 
-  int whenCanIIssueANotification() {
+  int whenCanIIssueANotification(bool isThisAboutNextDay) {
     int newScheduledHour;
     var i;
     var readyPriorityTable = populatePriorityTable();
     List priority4Count = new List();
-    List priority3Count= new List();
-    List priority2Count= new List();
-    List priority1Count= new List();
-    List priority0Count= new List();
+    List priority3Count = new List();
+    List priority2Count = new List();
+    List priority1Count = new List();
+    List priority0Count = new List();
 
     //print(readyPriorityTable.containsValue(4));
     //readyPriorityTable.forEach((key, ) => {  });
@@ -307,21 +357,33 @@ class MacroScheduleHandler {
           break;
       }
     }
-    var priority42Count = checkScheduledTimeWithCurrentHour(priority4Count);
-    var priority32Count = checkScheduledTimeWithCurrentHour(priority3Count);
-    var priority22Count = checkScheduledTimeWithCurrentHour(priority2Count);
-    var priority12Count = checkScheduledTimeWithCurrentHour(priority1Count);
-    var priority02Count = checkScheduledTimeWithCurrentHour(priority0Count);
+    var priority42Count;
+    var priority32Count;
+    var priority22Count;
+    var priority12Count;
+    var priority02Count;
 
+    if (isThisAboutNextDay == false) {
+      priority42Count = checkScheduledTimeWithCurrentHour(priority4Count);
+      priority32Count = checkScheduledTimeWithCurrentHour(priority3Count);
+      priority22Count = checkScheduledTimeWithCurrentHour(priority2Count);
+      priority12Count = checkScheduledTimeWithCurrentHour(priority1Count);
+      priority02Count = checkScheduledTimeWithCurrentHour(priority0Count);
+    } else if (isThisAboutNextDay == true) {
+      priority42Count = priority4Count;
+      priority32Count = priority3Count;
+      priority22Count = priority2Count;
+      priority12Count = priority1Count;
+      priority02Count = priority0Count;
+    } else {
+      print('error in line 379. Cannot resolve for what day is this calculation');
+    }
     if (priority42Count.isNotEmpty) {
       print(priority42Count);
 
       newScheduledHour = priority42Count[0];
-
     } else if (priority32Count.isNotEmpty) {
-
       if (priority32Count.length > 1) {
-
         newScheduledHour = randomFunction(priority32Count);
       } else {
         newScheduledHour = priority32Count[0];
@@ -349,19 +411,26 @@ class MacroScheduleHandler {
       if (newScheduledHour == null) {
         newScheduledHour = 24;
         print('no optimum time detected for today');
-      } else {print('error in choosing the best time method <whenCanIIssueANotification>');}
+      } else {
+        print(
+            'error in choosing the best time method <whenCanIIssueANotification>');
+      }
     }
     print('The different times with priorities 4 are: $priority4Count');
-    print('The different times with priorities 4 when compering with current timestamp are: $priority42Count');
+    print(
+        'The different times with priorities 4 when compering with current timestamp are: $priority42Count');
     print('The different times with priorities 3 are: $priority3Count');
-    print('The different times with priorities 3 when compering with current timestamp are: $priority32Count');
+    print(
+        'The different times with priorities 3 when compering with current timestamp are: $priority32Count');
     print('The different times with priorities 2 are: $priority2Count');
-    print('The different times with priorities 2 when compering with current timestamp are: $priority22Count');
+    print(
+        'The different times with priorities 2 when compering with current timestamp are: $priority22Count');
     print('The different times with priorities 1 are: $priority1Count');
-    print('The different times with priorities 1 when compering with current timestamp are: $priority12Count');
+    print(
+        'The different times with priorities 1 when compering with current timestamp are: $priority12Count');
     print('The different times with priorities 0 are: $priority0Count');
-    print('The different times with priorities 0 when compering with current timestamp are: $priority02Count');
-
+    print(
+        'The different times with priorities 0 when compering with current timestamp are: $priority02Count');
 
     return newScheduledHour;
   }
@@ -376,15 +445,15 @@ class MacroScheduleHandler {
     // print("$r is in the range of $min and $max");
   }
 
-  List<int> checkScheduledTimeWithCurrentHour (List list) {
+  List<int> checkScheduledTimeWithCurrentHour(List list) {
     var currentHour = currentTime.hour;
-    List<int> newList =new List();
+    List<int> newList = new List();
     var i;
-      for (i = 0; i < list.length; i++) {
-        if (list[i] > currentHour) {
-          newList.add(list[i]);
-        }
+    for (i = 0; i < list.length; i++) {
+      if (list[i] > currentHour) {
+        newList.add(list[i]);
       }
+    }
     return newList;
   }
 }
