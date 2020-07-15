@@ -4,15 +4,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:core';
 
+const presentTime = "2020-07-14 23:00:00";
+
 void main() async {
   String patientId = '124';
-  DateTime preferredDateTime = DateTime.parse("2020-07-07T16:00:00Z");
+  DateTime preferredDateTime = DateTime.parse("2020-07-17T16:00:00Z");
   var activationDuration = 7;
-  var token = 'tV41zJdhZIOsnwaiLfjqrDLWDTp1j6';
+  var token = 'WaCkm3AY7otqyXdmaEf8HKOGyOqhuy';
   var currentDate = getCurrentDate(false);
   var nextToCurrentDate = getCurrentDate(true);
-  var disease = 'MDS';
-  var clinic = 'PAGNI';
+  var disease = 'CLL';
+  var clinic = 'FN BRNO';
 
   final Future<List<dynamic>> futureList =
       getData(token, patientId, currentDate);
@@ -32,7 +34,14 @@ void main() async {
   } else {
     bool2Value = true;
   }
-
+  if (list == null || list.isEmpty) {
+    print("in createAndShowNotification, jsonAppointments are null --> return");
+    if (list2 == null || list2.isEmpty) {
+      print("in createAndShowNotification, jsonAppointments for next day are null --> return");
+      return;
+    }
+    return;
+  }
   var macroInstance = new MacroScheduleHandler(
       disease: disease,
       clinic: clinic,
@@ -40,18 +49,22 @@ void main() async {
       appointmentStartingTime: DateTime.parse(list[0]),
       isAppointmentForTreatment: boolValue);
 
-  //print(data);
+  print('\npriority table for current day:');
   print(macroInstance.populatePriorityTable());
   var canYou = macroInstance.canIIssueANotificationNow();
-  print(canYou);
+  print('\nYou should find a different time slot than issuing notification now: ' + canYou.toString());
+  //print(canYou);
 
   var scheduledHour = macroInstance.whenCanIIssueANotification(false);
-  print('Time to issue is: ' + scheduledHour.toString());
+  print('\nTime to issue for current day is: ' + scheduledHour.toString());
+  var intervalTime = scheduledHour - DateTime.parse(presentTime).hour;
+  print('schedule it in ' + intervalTime.toString() + ' hours from now');
   if (scheduledHour == 24) {
+    print('Since the value is: ' + scheduledHour.toString() + ' this means that the algorithm must run again for the next day');
     switch (activationDuration) {
       case 2:
         canYou = false;
-        print('The notification will be issued immediatly');
+        print('\nThe notification will be issued immediatly');
         break;
       case 7:
         var macro2Instance = new MacroScheduleHandler(
@@ -60,9 +73,12 @@ void main() async {
             preferredTime: preferredDateTime,
             appointmentStartingTime: DateTime.parse(list2[0]),
             isAppointmentForTreatment: bool2Value);
+        print('\npriority table for the next day:');
         print(macro2Instance.populatePriorityTable());
         var scheduled2Hour = macro2Instance.whenCanIIssueANotification(true);
-        print('Time to issue the next day is: ' + scheduled2Hour.toString());
+        print('\nTime to issue the next day is: ' + scheduled2Hour.toString());
+        var interval2Time = scheduled2Hour + 24 - DateTime.parse(presentTime).hour;
+        print('schedule it in ' + interval2Time.toString() + ' hours from now');
         break;
     }
   }
@@ -70,14 +86,14 @@ void main() async {
 
 String getCurrentDate(bool date) {
   DateTime currentDate =
-      DateTime.parse('2020-07-16T16:00:00Z'); //DateTime.now();
+      DateTime.parse(presentTime);//DateTime.now();
   if (date == false) {
     String searchDate = currentDate.year.toString() +
         '-' +
         currentDate.month.toString() +
         '-' +
         currentDate.day.toString();
-    print(searchDate);
+    print('getCurrentDate gives ' + searchDate);
     return searchDate;
   } else if (date == true) {
     int nextDay = currentDate.day + 1;
@@ -86,7 +102,7 @@ String getCurrentDate(bool date) {
         currentDate.month.toString() +
         '-' +
         nextDay.toString();
-    print(searchNextDate);
+    print('getCurrentDate for next day gives ' + searchNextDate);
     return searchNextDate;
   } else {
     return null;
@@ -105,8 +121,14 @@ Future<List<String>> getData(
         "Authorization": "bearer " + token,
         "Content-Type": "application/json"
       });
+  if (response.statusCode != 200) {
+    throw new Exception("Can not read Appointments.");
+  }
   List<dynamic> resBody = jsonDecode(response.body);
-  print(resBody);
+  //print(resBody);
+  if (resBody == null || resBody.isEmpty) {
+    throw new Exception("empty Appointments.");
+  }
   String appointmentDate = resBody[0]["appointment_date"];
   bool appTreat = resBody[0]["is_this_a_treatment_appointment"];
   print('datetime is ' + appointmentDate);
@@ -131,8 +153,7 @@ class MacroScheduleHandler {
 
   // int appointmentStartingHour = appointmentStartingTime.hour;
 
-  DateTime currentTime =
-      DateTime.parse("2020-07-14 13:00:00"); // new DateTime.now();
+  DateTime currentTime = DateTime.parse(presentTime); // new DateTime.now();
 
   List<int> getPriorityForAppointment() {
     List<int> priorityOfAppointment = new List();
@@ -171,7 +192,7 @@ class MacroScheduleHandler {
           break;
       }
     } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
-      print('MDS Treatment has no ill-timed moments');
+      print('in getPrioritiesForAppointments MDS Treatment has no ill-timed moments');
     } else {
       print(
           'error in getPriority method of MacroScheduleHandler class at the disease if statement');
@@ -243,7 +264,7 @@ class MacroScheduleHandler {
     } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
       durationOfAppointment.add(0);
 
-      print('MDS Treatment has no ill-timed moments');
+      print('in getDurationForAppointments MDS Treatment has no ill-timed moments');
     } else {
       print(
           'error in calculate duration method of MacroScheduleHandler class at the disease if statement');
@@ -255,18 +276,6 @@ class MacroScheduleHandler {
     bool canYou;
     var issueNotification = populatePriorityTable();
     int currentHour = currentTime.hour;
-    /*int endingHour;
-    var durationOfAppointment = getDurationOfAppointment();
-    int startingHour = getStartingHourOfAppointment();
-    if (durationOfAppointment.length == 2) {
-      endingHour =
-          startingHour + durationOfAppointment[0] + durationOfAppointment[1];
-    } else {
-      endingHour = startingHour + durationOfAppointment[0];
-    }
-    if (currentHour >= startingHour && currentHour < endingHour && issueNotification[currentHour] < 3) {
-      canYou = true;
-    } else*/
     if (issueNotification[currentHour] > 2) {
       canYou = false;
     } else {
@@ -287,8 +296,6 @@ class MacroScheduleHandler {
     priorities[23] = 1;
     priorities[9] = 2;
     priorities[22] = 2;
-    //priorities[24] = currentTime.hour;
-
     return priorities;
   }
 
@@ -330,14 +337,10 @@ class MacroScheduleHandler {
     List priority1Count = new List();
     List priority0Count = new List();
 
-    //print(readyPriorityTable.containsValue(4));
-    //readyPriorityTable.forEach((key, ) => {  });
-
     for (i = 0; i <= readyPriorityTable.length; i++) {
       switch (readyPriorityTable[i]) {
         case 4:
           priority4Count.add(i);
-          //print(priority4Count);
           break;
 
         case 3:
@@ -376,11 +379,9 @@ class MacroScheduleHandler {
       priority12Count = priority1Count;
       priority02Count = priority0Count;
     } else {
-      print('error in line 379. Cannot resolve for what day is this calculation');
+      print('error in line 390. Cannot resolve for what day is this calculation');
     }
     if (priority42Count.isNotEmpty) {
-      print(priority42Count);
-
       newScheduledHour = priority42Count[0];
     } else if (priority32Count.isNotEmpty) {
       if (priority32Count.length > 1) {
@@ -390,7 +391,6 @@ class MacroScheduleHandler {
       }
     } else if (priority22Count.isNotEmpty) {
       if (priority22Count.length > 1) {
-        print(priority22Count);
         newScheduledHour = randomFunction(priority22Count);
       } else {
         newScheduledHour = priority22Count[0];
@@ -410,25 +410,25 @@ class MacroScheduleHandler {
     } else {
       if (newScheduledHour == null) {
         newScheduledHour = 24;
-        print('no optimum time detected for today');
+        print('\nin whenCanIIssueANotification: no optimum time detected for today');
       } else {
         print(
             'error in choosing the best time method <whenCanIIssueANotification>');
       }
     }
-    print('The different times with priorities 4 are: $priority4Count');
+    print('\nThe different times with priorities 4 are: $priority4Count');
     print(
         'The different times with priorities 4 when compering with current timestamp are: $priority42Count');
-    print('The different times with priorities 3 are: $priority3Count');
+    print('\nThe different times with priorities 3 are: $priority3Count');
     print(
         'The different times with priorities 3 when compering with current timestamp are: $priority32Count');
-    print('The different times with priorities 2 are: $priority2Count');
+    print('\nThe different times with priorities 2 are: $priority2Count');
     print(
         'The different times with priorities 2 when compering with current timestamp are: $priority22Count');
-    print('The different times with priorities 1 are: $priority1Count');
+    print('\nThe different times with priorities 1 are: $priority1Count');
     print(
         'The different times with priorities 1 when compering with current timestamp are: $priority12Count');
-    print('The different times with priorities 0 are: $priority0Count');
+    print('\nThe different times with priorities 0 are: $priority0Count');
     print(
         'The different times with priorities 0 when compering with current timestamp are: $priority02Count');
 
@@ -437,12 +437,8 @@ class MacroScheduleHandler {
 
   int randomFunction(List list) {
     final _random = new Random();
-
-// generate a random index based on the list length
-// and use it to retrieve the element
     var element = list[_random.nextInt(list.length)];
     return element;
-    // print("$r is in the range of $min and $max");
   }
 
   List<int> checkScheduledTimeWithCurrentHour(List list) {
