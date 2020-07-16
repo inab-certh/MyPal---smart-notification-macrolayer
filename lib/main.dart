@@ -124,31 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ]),
-                  /*new DateTimePickerFormField(
-                    inputType: InputType.both,
-                    format: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
-                    editable: false,
-                    decoration: InputDecoration(
-                        labelText: 'Appointment 3',
-                        hasFloatingPlaceholder: true),
-                    onChanged: (dt) {
-                      setState(() => date3 = dt);
-                      print('Selected date: $date3');
-                    },
-                  ),
-                  Row(children: <Widget>[
-                    Expanded(
-                      child: Text("Is this a Treatment Appointment?"),
-                    ),
-                    new Checkbox(
-                      value: isChecked3,
-                      onChanged: (value) {
-                        setState(() {
-                          isChecked3 = value;
-                        });
-                      },
-                    ),
-                  ]),*/
                   new FormField(
                     builder: (FormFieldState state) {
                       return InputDecorator(

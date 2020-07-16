@@ -4,17 +4,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:core';
 
-const presentTime = "2020-07-14 23:00:00";
+const presentTime = "2020-07-16T15:28:00Z";
 
 void main() async {
   String patientId = '124';
   DateTime preferredDateTime = DateTime.parse("2020-07-17T16:00:00Z");
-  var activationDuration = 7;
-  var token = 'WaCkm3AY7otqyXdmaEf8HKOGyOqhuy';
+  var activationDuration = 2;
+  var token = 'DrYT3iobcMxJz7HiZ15dbipOJCbtj2';
   var currentDate = getCurrentDate(false);
   var nextToCurrentDate = getCurrentDate(true);
   var disease = 'CLL';
-  var clinic = 'FN BRNO';
+  var clinic = 'KI';
 
   final Future<List<dynamic>> futureList =
       getData(token, patientId, currentDate);
@@ -34,9 +34,13 @@ void main() async {
   } else {
     bool2Value = true;
   }
-  if (list == null || list.isEmpty) {
-    print("in createAndShowNotification, jsonAppointments are null --> return");
-    if (list2 == null || list2.isEmpty) {
+  print(list);
+  print(list2);
+  var canYou;
+  if (list[0] == null || list[1] == null || list.isEmpty) {
+    canYou =false;
+    print("in createAndShowNotification, jsonAppointments are null --> return appointmentsMedicationTreatment:"+canYou.toString());
+    if (list2[0] == null || list2[1] == null || list2.isEmpty) {
       print("in createAndShowNotification, jsonAppointments for next day are null --> return");
       return;
     }
@@ -51,42 +55,64 @@ void main() async {
 
   print('\npriority table for current day:');
   print(macroInstance.populatePriorityTable());
-  var canYou = macroInstance.canIIssueANotificationNow();
-  print('\nYou should find a different time slot than issuing notification now: ' + canYou.toString());
-  //print(canYou);
+  canYou = macroInstance.canIIssueANotificationNow();
+  print(
+      '\nYou should find a different time slot than issuing notification now: ' +
+          canYou.toString());
+  if (canYou == false){
+    var intervalCanYou = DateTime.parse(presentTime).minute + 2;//plus 2 minutes for now
+    print('The notification will be issued now at ' + DateTime.parse(presentTime).hour.toString()+':'+intervalCanYou.toString());
+  } else {
+    var scheduledHour = macroInstance.whenCanIIssueANotification(false);
 
-  var scheduledHour = macroInstance.whenCanIIssueANotification(false);
-  print('\nTime to issue for current day is: ' + scheduledHour.toString());
-  var intervalTime = scheduledHour - DateTime.parse(presentTime).hour;
-  print('schedule it in ' + intervalTime.toString() + ' hours from now');
-  if (scheduledHour == 24) {
-    print('Since the value is: ' + scheduledHour.toString() + ' this means that the algorithm must run again for the next day');
-    switch (activationDuration) {
-      case 2:
-        canYou = false;
-        print('\nThe notification will be issued immediatly');
-        break;
-      case 7:
-        var macro2Instance = new MacroScheduleHandler(
-            disease: disease,
-            clinic: clinic,
-            preferredTime: preferredDateTime,
-            appointmentStartingTime: DateTime.parse(list2[0]),
-            isAppointmentForTreatment: bool2Value);
-        print('\npriority table for the next day:');
-        print(macro2Instance.populatePriorityTable());
-        var scheduled2Hour = macro2Instance.whenCanIIssueANotification(true);
-        print('\nTime to issue the next day is: ' + scheduled2Hour.toString());
-        var interval2Time = scheduled2Hour + 24 - DateTime.parse(presentTime).hour;
-        print('schedule it in ' + interval2Time.toString() + ' hours from now');
-        break;
+    if (scheduledHour == 24) {
+      scheduledHour = DateTime
+          .parse(presentTime)
+          .hour;
+      print(
+          '\nSince the value is: 24 this means that the algorithm must run again for the next day if the activeDuration value is 7');
+      switch (activationDuration) {
+        case 2:
+          canYou = false;
+          print(
+              'else (activeDuration=2) The notification will be issued immediatly at present time which is: ' +
+                  scheduledHour.toString() +
+                  ':00');
+          break;
+        case 7:
+          var macro2Instance = new MacroScheduleHandler(
+              disease: disease,
+              clinic: clinic,
+              preferredTime: preferredDateTime,
+              appointmentStartingTime: DateTime.parse(list2[0]),
+              isAppointmentForTreatment: bool2Value);
+          print('\npriority table for the next day:');
+          print(macro2Instance.populatePriorityTable());
+          var scheduled2Hour = macro2Instance.whenCanIIssueANotification(true);
+          print(
+              '\nTime to issue the next day is: ' + scheduled2Hour.toString() +
+                  ':00');
+          var interval2Time =
+              scheduled2Hour + 24 - DateTime
+                  .parse(presentTime)
+                  .hour;
+          print(
+              'schedule it in ' + interval2Time.toString() + ' hours from now');
+          break;
+      }
+    } else {
+      print('\nTime to issue for current day is: ' + scheduledHour.toString() +
+          ':00');
+      var intervalTime = scheduledHour - DateTime
+          .parse(presentTime)
+          .hour;
+      print('schedule it in ' + intervalTime.toString() + ' hours from now');
     }
   }
 }
 
 String getCurrentDate(bool date) {
-  DateTime currentDate =
-      DateTime.parse(presentTime);//DateTime.now();
+  DateTime currentDate = DateTime.parse(presentTime); //DateTime.now();
   if (date == false) {
     String searchDate = currentDate.year.toString() +
         '-' +
@@ -126,14 +152,16 @@ Future<List<String>> getData(
   }
   List<dynamic> resBody = jsonDecode(response.body);
   //print(resBody);
+  String appointmentDate;
+  bool appTreat;
   if (resBody == null || resBody.isEmpty) {
-    throw new Exception("empty Appointments.");
+    /*throw new Exception*/print("empty Appointments.");
+  } else {
+    appointmentDate = resBody[0]["appointment_date"];
+    appTreat = resBody[0]["is_this_a_treatment_appointment"];
+    print('datetime is ' + appointmentDate);
+    print('treatment status is ' + appTreat.toString());
   }
-  String appointmentDate = resBody[0]["appointment_date"];
-  bool appTreat = resBody[0]["is_this_a_treatment_appointment"];
-  print('datetime is ' + appointmentDate);
-  print('treatment status is ' + appTreat.toString());
-
   return [appointmentDate, appTreat.toString()];
 }
 
@@ -192,7 +220,8 @@ class MacroScheduleHandler {
           break;
       }
     } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
-      print('in getPrioritiesForAppointments MDS Treatment has no ill-timed moments');
+      print(
+          'in getPrioritiesForAppointments MDS Treatment has no ill-timed moments');
     } else {
       print(
           'error in getPriority method of MacroScheduleHandler class at the disease if statement');
@@ -264,7 +293,8 @@ class MacroScheduleHandler {
     } else if (disease == 'MDS' && isAppointmentForTreatment == true) {
       durationOfAppointment.add(0);
 
-      print('in getDurationForAppointments MDS Treatment has no ill-timed moments');
+      print(
+          'in getDurationForAppointments MDS Treatment has no ill-timed moments');
     } else {
       print(
           'error in calculate duration method of MacroScheduleHandler class at the disease if statement');
@@ -379,7 +409,8 @@ class MacroScheduleHandler {
       priority12Count = priority1Count;
       priority02Count = priority0Count;
     } else {
-      print('error in line 390. Cannot resolve for what day is this calculation');
+      print(
+          'error in line 390. Cannot resolve for what day is this calculation');
     }
     if (priority42Count.isNotEmpty) {
       newScheduledHour = priority42Count[0];
@@ -410,7 +441,8 @@ class MacroScheduleHandler {
     } else {
       if (newScheduledHour == null) {
         newScheduledHour = 24;
-        print('\nin whenCanIIssueANotification: no optimum time detected for today');
+        print(
+            '\nin whenCanIIssueANotification: no optimum time detected for today');
       } else {
         print(
             'error in choosing the best time method <whenCanIIssueANotification>');
