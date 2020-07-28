@@ -3,10 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:macronotificationsmypal/macroProcesses.dart';
-import 'package:macronotificationsmypal/macroScheduleHandler.dart';
+import 'package:macronotificationsmypal/macroScheduleHandlerNEW.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 //import 'splashNavigation.dart';
-
-void main() => runApp(MyApp());
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+void main() async {
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  // NOTE: if you want to find out if the app was launched via notification then you could use the following call and then do something like
+  // change the default route of the app
+  // var notificationAppLaunchDetails =
+  //     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  runApp(MyApp()
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -56,7 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime current = new DateTime.now();
   int curhour = DateTime.now().hour;
   int curminute = DateTime.now().minute;
-  var argpos = new List(2);
+  var argpos;
+
 
 
   @override
@@ -220,19 +230,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         child:
                             const Text('Schedule Macro (Activation of ePRO)'),
                         onPressed:
-                            () {
-                          argpos = getPrioritiesForNotificationSchedule(date1, isChecked1, _disease, _clinic, prefered);
+                            () async{
+                          argpos =await getDateTime(_disease, _clinic, prefered);
                           print(argpos);
+                          await _scheduleNotification(argpos);
 
-                          showDialog(
+                          /*showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 Future.delayed(const Duration(seconds: 2));
                                 return Center(child: CircularProgressIndicator(),);
                               });
 
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));
-
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MacroResults(op1: argpos)));
+*/
                           /*Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -243,5 +254,34 @@ class _MyHomePageState extends State<MyHomePage> {
               ))),
     );
   }
+  Future<void> _scheduleNotification(int pos) async {
+    var scheduledNotificationDateTime =
+    DateTime.now().add(Duration(seconds: pos));
 
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'your other channel id',
+        'your other channel name',
+        'your other channel description',
+        icon: 'secondary_icon',
+        sound: 'slow_spring_board',
+        largeIcon: 'sample_large_icon',
+        largeIconBitmapSource: BitmapSource.Drawable,
+
+        enableLights: true,
+        color: const Color.fromARGB(255, 255, 0, 0),
+        ledColor: const Color.fromARGB(255, 255, 0, 0),
+        ledOnMs: 1000,
+        ledOffMs: 500);
+    var iOSPlatformChannelSpecifics =
+    IOSNotificationDetails(sound: "slow_spring_board.aiff");
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.schedule(
+        2,
+        'scheduled title',
+        'scheduled body',
+        scheduledNotificationDateTime,
+        platformChannelSpecifics);
+  }
 }

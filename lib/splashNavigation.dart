@@ -14,7 +14,7 @@ class MySplashCit extends StatefulWidget {
 }
 
 class _MySplashCitState extends State<MySplashCit> {
-  var _position;
+  //var _position;
 
   var _opp;
 
@@ -29,7 +29,7 @@ class _MySplashCitState extends State<MySplashCit> {
       //photoSize: 70.0,
       loaderColor: Colors.blue,
       loadingText: Text('Loading'),
-      navigateAfterSeconds: MacroResults(op1:_opp, op2:_position),
+      navigateAfterSeconds: MacroResults(op1:_opp),
     );
   }
 }

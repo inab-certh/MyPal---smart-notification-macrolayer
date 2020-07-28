@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:core';
 
-const presentTime = "2020-07-16T15:28:00Z";
+const presentTime = "2020-07-15T15:10:00Z";
 
 void main() async {
   String patientId = '124';
   DateTime preferredDateTime = DateTime.parse("2020-07-17T16:00:00Z");
   var activationDuration = 2;
-  var token = 'DrYT3iobcMxJz7HiZ15dbipOJCbtj2';
+  var token = 'XwjOZlJdfuu9KnDwKuOj5RlNyRXCO4';
   var currentDate = getCurrentDate(false);
   var nextToCurrentDate = getCurrentDate(true);
   var disease = 'CLL';
@@ -38,11 +38,12 @@ void main() async {
   print(list2);
   var canYou;
   if (list[0] == null || list[1] == null || list.isEmpty) {
-    canYou =false;
-    print("in createAndShowNotification, jsonAppointments are null --> return appointmentsMedicationTreatment:"+canYou.toString());
+    canYou = canIIssueANotificationNow(preferredDateTime);
+    print("in createAndShowNotification, jsonAppointments are null --> return appointmentsMedicationTreatment:"+canYou.toString()+' \n if false it will be issued now, if true it will be issued at preferred time');
     if (list2[0] == null || list2[1] == null || list2.isEmpty) {
       print("in createAndShowNotification, jsonAppointments for next day are null --> return");
       return;
+
     }
     return;
   }
@@ -52,6 +53,8 @@ void main() async {
       preferredTime: preferredDateTime,
       appointmentStartingTime: DateTime.parse(list[0]),
       isAppointmentForTreatment: boolValue);
+
+
 
   print('\npriority table for current day:');
   print(macroInstance.populatePriorityTable());
@@ -148,7 +151,8 @@ Future<List<String>> getData(
         "Content-Type": "application/json"
       });
   if (response.statusCode != 200) {
-    throw new Exception("Can not read Appointments.");
+    /*throw new Exception*/print("Can not read Appointments.");
+    return [null,null];
   }
   List<dynamic> resBody = jsonDecode(response.body);
   //print(resBody);
@@ -163,6 +167,34 @@ Future<List<String>> getData(
     print('treatment status is ' + appTreat.toString());
   }
   return [appointmentDate, appTreat.toString()];
+}
+bool canIIssueANotificationNow(DateTime preferredTime) {
+  Map<int, int> priorities = Map();
+
+  // from 1 to 8
+  for (int i = 0; i < 9; i++) {
+    priorities[i] = 1;
+  }
+
+  priorities[9] = 2; // 9
+
+  // from 10 to 21
+  for (int i = 10; i < 22; i++) {
+    priorities[i] = 3;
+  }
+
+  priorities[22] = 2; // 22
+  priorities[23] = 1; // 23
+  priorities[preferredTime.hour] = 4; // the preferred hour should be populated in this method of the class
+  //print(priorities);
+  bool canYou;
+  int currentHour = DateTime.parse(presentTime).hour;
+  if (priorities[currentHour] > 2) {
+    canYou = false;
+  } else {
+    canYou = true;
+  }
+  return canYou;
 }
 
 class MacroScheduleHandler {
@@ -326,12 +358,12 @@ class MacroScheduleHandler {
     priorities[23] = 1;
     priorities[9] = 2;
     priorities[22] = 2;
+    priorities[preferredTime.hour] = 4;
     return priorities;
   }
 
   Map populatePriorityTable() {
     Map<int, int> priorities = initializeHourTable();
-    priorities[preferredTime.hour] = 4;
     var i;
     var startingHour = getStartingHourOfAppointment();
     var durationOfAppointment = getDurationOfAppointment();
@@ -476,8 +508,7 @@ class MacroScheduleHandler {
   List<int> checkScheduledTimeWithCurrentHour(List list) {
     var currentHour = currentTime.hour;
     List<int> newList = new List();
-    var i;
-    for (i = 0; i < list.length; i++) {
+    for (int i = 0; i < list.length; i++) {
       if (list[i] > currentHour) {
         newList.add(list[i]);
       }

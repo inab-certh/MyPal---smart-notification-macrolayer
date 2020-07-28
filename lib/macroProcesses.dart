@@ -6,9 +6,9 @@ import 'main.dart';
 
 
 class MacroResults extends StatelessWidget {
-  MacroResults({Key key, this.op1, this.op2}) : super(key: key);
+  MacroResults({Key key, this.op1}) : super(key: key);
   final int op1;
-  final int op2;
+  final int op2 = null;
 
   @override
   Widget build(BuildContext context) {
