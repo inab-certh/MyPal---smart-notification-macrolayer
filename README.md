@@ -14,4 +14,3 @@ A few resources to get you informed about the MyPal project and this app's devel
 
 For any questions with the platform or to pose any questions view our
 [online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
-# The Developer offers gratitude to the Tri.Per. Crew & Friends 
