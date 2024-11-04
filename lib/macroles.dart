@@ -10,7 +10,7 @@ void main() async {
   String patientId = '124';
   DateTime preferredDateTime = DateTime.parse("2020-07-17T16:00:00Z");
   var activationDuration = 2;
-  var token = 'XwjOZlJdfuu9KnDwKuOj5RlNyRXCO4';
+  var token = 'clinic_token'; // replace with clinic secret token
   var currentDate = getCurrentDate(false);
   var nextToCurrentDate = getCurrentDate(true);
   var disease = 'CLL';
