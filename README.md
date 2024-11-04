@@ -1,6 +1,75 @@
-# MyPal testing app
+<a name="readme-top"></a>
 
-A Flutter application for the developing&#x2F;designing&#x2F;testing purposes of the MyPal&#x27;s mobile Notification service, namely the Macro timing layer.
+# Macro MyPal Notification App
+
+## Overview
+
+The Macro MyPal Notification App is a Flutter-based application designed to manage and schedule notifications effectively. This app is part of the MyPal project, aimed at improving patient experience through personalized care notifications.
+
+## Features
+
+- **Macro Scheduling**: Schedule and manage recurring notifications with ease.
+- **User-Centric Design**: Simplified user interface focused on user experience.
+- **Cross-Platform**: Supports both Android and iOS platforms.
+
+## Technologies Used
+
+- **Framework**: Flutter
+- **Languages**: Dart
+- **Platforms Supported**: Android, iOS
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK installed. [Install Flutter](https://flutter.dev/docs/get-started/install)
+- Android Studio or Visual Studio Code for development.
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/macro_mypal_notification.git
+   ```
+2. Navigate into the project directory:
+   ```bash
+   cd macro_mypal_notification
+   ```
+3. Get dependencies:
+   ```bash
+   flutter pub get
+   ```
+4. Run the app:
+   ```bash
+   flutter run
+   ```
+
+## Folder Structure
+
+```plaintext
+macro_mypal_notification/
+├── android/              # Android native code
+├── ios/                  # iOS native code
+├── lib/                  # Dart code (main application)
+├── test/                 # Unit and widget tests
+├── pubspec.yaml          # Project configuration
+└── README.md             # Project documentation
+```
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
+
+## Acknowledgments
+
+- The Flutter community for continuous support.
+- The MyPal project team for their guidance and support.
 
 ## Learn about MyPal
 
@@ -10,8 +79,14 @@ A few resources to get you informed about the MyPal project and this app's devel
 
 - [MyPal: Fostering Palliative Care of Adults and Children with Cancer through Advanced Patient Reported Outcome Systems](https://mypal-project.eu/)
 - [CERTH | INAB: The project Coordinator Partner](https://www.inab.certh.gr/)
-- [Panos Bonotis: Research Associate | Informatics & Telecommunications Engineer (Dip.Eng)](https://www.linkedin.com/in/panos-bonotis-351a7996/)
+- [Panos Bonotis: Research Associate, PhD Candidate](https://www.linkedin.com/in/panosbonotis/)
 
 For any questions with the platform or to pose any questions view our
 [online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
-# The Developer offers gratitude to the Tri.Per. Crew & Friends 
+
+## Contact
+
+For any queries or suggestions, please contact:
+- **Project Maintainer**: Panos Bonotis - [LinkedIn](https://www.linkedin.com/in/panosbonotis/) - pbonotis@certh.gr
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

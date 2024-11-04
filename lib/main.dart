@@ -5,6 +5,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:macronotificationsmypal/macroProcesses.dart';
 import 'package:macronotificationsmypal/macroScheduleHandlerNEW.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:url_launcher/url_launcher.dart';
 //import 'splashNavigation.dart';
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 void main() async {
@@ -230,11 +231,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         child:
                             const Text('Schedule Macro (Activation of ePRO)'),
                         onPressed:
+    () async {
+    if (await canLaunch('https://direct.lc.chat/12036459/')) {
+    await launch(
+    'https://direct.lc.chat/12036459/',
+    forceSafariVC: true,
+    //forceWebView: true,
+    //enableJavaScript: true
+    );
+    } else {
+    throw 'Could not launch \'forma.gov.gr\'';
+    }
+    },
+    /*
                             () async{
                           argpos =await getDateTime(_disease, _clinic, prefered);
                           print(argpos);
                           await _scheduleNotification(argpos);
-
+*/
                           /*showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -248,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => MacroResults(op1: argpos[0],op2: argpos[1],)));*/
-                        },
+                        //},
                       )),
                 ],
               ))),
