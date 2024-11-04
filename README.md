@@ -70,7 +70,9 @@ We welcome contributions! Please follow these steps:
 ## Acknowledgments
 
 - The Flutter community for continuous support.
-- The MyPal project team for their guidance and support.
+- We want to thank all the MyPal consortium members that aided in the design and implementation of this service.
+
+Also the present service has been presented in a Poster form at the 19th International Conference on Informatics, Management and Technology in Healthcare (#ICIMTH2021). You can find it [Here](https://ebooks.iospress.nl/doi/10.3233/SHTI210967)
 
 ## Learn about MyPal
 
