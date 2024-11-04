@@ -6,6 +6,7 @@
 ## Overview
 
 The Macro MyPal Notification App is a Flutter-based application designed to manage and schedule notifications effectively. This app is part of the MyPal project, aimed at improving patient experience through personalized care notifications.
+The goal is to exclude beforehand based on the patients cancer-related schedule and preferences, the ill-timed moments for a notification to be presented in order to ensure the completion of the questionnaires. This app leverages expert input to identify and exclude ill-timed moments for notifications, aligning with the broader goal of enhancing patient care through personalized digital health interventions.
 
 ## Features
 
@@ -82,15 +83,13 @@ A few resources to get you informed about the MyPal project and this app's devel
 
 - [MyPal: Fostering Palliative Care of Adults and Children with Cancer through Advanced Patient Reported Outcome Systems](https://mypal-project.eu/)
 - [CERTH | INAB: The project Coordinator Partner](https://www.inab.certh.gr/)
-- [Panos Bonotis: Research Associate, PhD Candidate](https://www.linkedin.com/in/panosbonotis/)
 
-For any questions with the platform or to pose any questions view our
-[online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
 ![MyPal logo](assets/MyPal%20Logo.png)
 
 ## Contact
 
 For any queries or suggestions, please contact:
 - **Project Maintainer**: Panos Bonotis - [LinkedIn](https://www.linkedin.com/in/panosbonotis/) - pbonotis@certh.gr
+- or to pose any questions [online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
