@@ -1,6 +1,7 @@
 <a name="readme-top"></a>
 
 # Macro MyPal Notification App
+![MyPal logo](assets/MyPal-for-ADULTS_App_LOGO3.png)
 
 ## Overview
 
