@@ -40,10 +40,8 @@ It's important to note that this repository contains only the notification frame
 
 ```plaintext
 macro_mypal_notification/
-├── android/              # Android native code
-├── ios/                  # iOS native code
 ├── lib/                  # Dart code (main application)
-├── test/                 # Unit and widget tests
+├── assets/               # logos and figures
 ├── pubspec.yaml          # Project configuration
 └── README.md             # Project documentation
 ```
