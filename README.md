@@ -5,8 +5,9 @@
 
 ## Overview
 
-The Macro MyPal Notification App is a Flutter-based application designed to manage and schedule notifications effectively. This app is part of the MyPal project, aimed at improving patient experience through personalized care notifications.
-The goal is to exclude beforehand based on the patients cancer-related schedule and preferences, the ill-timed moments for a notification to be presented in order to ensure the completion of the questionnaires. This app leverages expert input to identify and exclude ill-timed moments for notifications, aligning with the broader goal of enhancing patient care through personalized digital health interventions.
+The MyPal Notification App is a Flutter-based component of the MyPal project, designed to enhance patient care through smart and personalized notification scheduling. This app plays a crucial role in managing and timing notifications effectively, ensuring that patients receive reminders and prompts at the most suitable moments, tailored to their individual cancer-related schedules and preferences.
+The core functionality of the app is built around expert-driven logic that identifies and excludes poorly timed moments for notifications, helping to improve patient engagement and ensure the timely completion of important questionnaires. By leveraging detailed patient data and expert input, the app aligns with the MyPal project's mission to provide a more personalized and patient-centric digital health experience.
+It's important to note that this repository contains only the notification framework and macro-layer logic—responsible for determining the optimal timing for notifications based on available data. This app is not a standalone solution and requires integration with the rest of the MyPal application to function as intended. Without the full MyPal system, this component will not operate independently, as it relies on the broader MyPal infrastructure for patient data and overall system interactions.
 
 ## Features
 
@@ -17,6 +18,7 @@ The goal is to exclude beforehand based on the patients cancer-related schedule 
 ## Technologies Used
 
 - **Framework**: Flutter
+  - [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications)
 - **Languages**: Dart
 - **Platforms Supported**: Android, iOS
 
@@ -26,25 +28,13 @@ The goal is to exclude beforehand based on the patients cancer-related schedule 
 
 - Flutter SDK installed. [Install Flutter](https://flutter.dev/docs/get-started/install)
 - Android Studio or Visual Studio Code for development.
+- MyPal for adults repository pulled to your local environment.
+  - Unfortunately it is not available for download and editing.
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/macro_mypal_notification.git
-   ```
-2. Navigate into the project directory:
-   ```bash
-   cd macro_mypal_notification
-   ```
-3. Get dependencies:
-   ```bash
-   flutter pub get
-   ```
-4. Run the app:
-   ```bash
-   flutter run
-   ```
+- Unfortunately this app is one of the components that make the MyPal for adults application.
+- This means this app cannot run by itself. It is embedded in the MyPal for adults app available only via the Fraunhofer GitLab website.
 
 ## Folder Structure
 
@@ -71,7 +61,7 @@ We welcome contributions! Please follow these steps:
 ## Acknowledgments
 
 - The Flutter community for continuous support.
-- We want to thank all the MyPal consortium members that aided in the design and implementation of this service.
+- A huge thank you to all the MyPal consortium members that aided in the design and implementation of this service.
 
 Also the present service has been presented in a Poster form at the 19th International Conference on Informatics, Management and Technology in Healthcare (#ICIMTH2021). You can find it [Here](https://ebooks.iospress.nl/doi/10.3233/SHTI210967)
 
@@ -89,7 +79,7 @@ A few resources to get you informed about the MyPal project and this app's devel
 ## Contact
 
 For any queries or suggestions, please contact:
-- **Project Maintainer**: Panos Bonotis - [LinkedIn](https://www.linkedin.com/in/panosbonotis/) - pbonotis@certh.gr
-- or to pose any questions [online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
+- **Designed & Developed**: Panos Bonotis - [LinkedIn](https://www.linkedin.com/in/panosbonotis/) - pbonotis@certh.gr
+- Please pose any questions [online website](https://mypal-project.eu/contact-us/), which offers plenty of information of the present state of the MyPal project and much more..
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
